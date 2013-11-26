@@ -200,7 +200,7 @@ class GDBServer(threading.Thread):
             logging.debug('msg ignored: first char != $')
             return None, 0, 0
         
-        #logging.debug('-->>>>>>>>>>>> GDB rsp packet: %s', msg)
+        logging.debug('-->>>>>>>>>>>> GDB rsp packet: %s', msg)
         
         # query command
         if msg[1] == 'q':
@@ -587,7 +587,7 @@ class GDBServer(threading.Thread):
             resp += '0'
         resp += checksum[2:]
         
-        #logging.debug('--<<<<<<<<<<<< GDB rsp packet: %s', resp)
+        logging.debug('--<<<<<<<<<<<< GDB rsp packet: %s', resp)
         return resp
     
     def ack(self):

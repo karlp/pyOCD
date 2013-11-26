@@ -160,6 +160,8 @@ class CortexM(Target):
         """
         Cortex M initialization
         """
+        # Don't think we need this....
+        """
         self.idcode = self.readIDCode()
         # select bank 0 (to access DRW and TAR)
         self.transport.writeDP(DP_REG['SELECT'], 0)
@@ -172,7 +174,7 @@ class CortexM(Target):
         
         self.transport.writeDP(DP_REG['CTRL_STAT'], CSYSPWRUPREQ | CDBGPWRUPREQ | TRNNORMAL | MASKLANE)
         self.transport.writeDP(DP_REG['SELECT'], 0)
-
+"""
         if setup_fpb:
             self.halt()
             self.setupFPB()

@@ -18,12 +18,13 @@
 import logging
 
 from pyOCD.gdbserver import GDBServer
-from pyOCD.board import MbedBoard
+import pyOCD.board
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 try:
-    board_selected = MbedBoard.chooseBoard()
+    #board_selected = pyOCD.board.MbedBoard.chooseBoard()
+    board_selected = pyOCD.board.DiscoBoard.chooseBoard()
     if board_selected != None:
         gdb = GDBServer(board_selected, 3333)
         while gdb.isAlive():
@@ -32,5 +33,6 @@ try:
 except KeyboardInterrupt:
     gdb.stop()
 except Exception as e:
-    print "uncaught exception: %s" % e
+    logging.exception("Uncaught exception!")
+    #print("uncaught exception: %s" % e)
     gdb.stop()

@@ -52,6 +52,10 @@ def stlink_pad_real(cmd):
         msg[i] = x
     return msg
 
+def xfer_send_only_raw(dev, data):
+    count = dev.write(STLINK_EP_TX, data, 0)
+    assert count == len(data), "Failed to write data to usb"
+
 def xfer_normal_input(dev, cmd, expected_response_size, verbose=False):
     msg = stlink_pad(cmd)
     if verbose:
@@ -162,7 +166,36 @@ class STLINKv2(Transport):
         res = xfer_normal_input(self.interface, cmd, 2)
         logging.debug("STOP TRACE")
 
-    
+    def readMem(self, addr, bits):
+        """
+        count is in bytes!
+        """
+        assert bits <= 32, "cmsisdap can only do single word reads"
+        assert bits % 8 == 0, "cmsis dap can only do whole byte reads"
+        byte_count = int(bits / 8)
+        cmd = [STLINK_DEBUG_COMMAND, STLINK_DEBUG_READMEM32]
+        args = [ord(q) for q in struct.pack("<IH", addr, byte_count)]
+        cmd.extend(args)
+        res = xfer_normal_input(self.interface, cmd, byte_count)
+        u32s = struct.unpack("<I", res)[0]
+        logging.debug("READMEM32 %#x/%d returned: %s", addr, byte_count, hex(u32s))
+        if bits == 16:
+            print("Actually returning u32s>>16")
+            return u32s >> 16
+        if bits == 8:
+            print("Actually returning u32s>>24")
+            return u32s >> 24
+        return u32s
+
+    def writeMem(self, addr, data, transfer_size=32):
+        assert transfer_size == 32, "Untested non32bit writes!"
+        cmd = [STLINK_DEBUG_COMMAND, STLINK_DEBUG_APIV2_WRITEDEBUGREG]
+        args = [ord(q) for q in struct.pack("<II", addr, data)]
+        cmd.extend(args)
+        res = xfer_normal_input(self.interface, cmd, 2)
+        logging.debug("WRITE DEBUG %#x ==> %d (%#08x)", addr, data, data)
+
+
     def uninit(self):
         self.trace_off()
         self.leave_state()
