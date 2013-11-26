@@ -16,3 +16,4 @@
 """
 
 from mbed_board import MbedBoard
+from disco_board import DiscoBoard

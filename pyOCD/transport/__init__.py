@@ -16,6 +16,8 @@
 """
 
 from cmsis_dap import CMSIS_DAP
+from stlinkv2 import STLINKv2
 
-TRANSPORT = {'cmsis_dap': CMSIS_DAP
+TRANSPORT = {'cmsis_dap': CMSIS_DAP,
+             "stlinkv2": STLINKv2
             }

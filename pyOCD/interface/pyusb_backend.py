@@ -41,9 +41,11 @@ class PyUSB(Interface):
         self.dev = None
     
     @staticmethod
-    def getAllConnectedInterface(vid, pid):
+    def getAllConnectedInterface(vid, pid, interfaceClass=0x03):
         """
-        returns all the connected devices which matches PyUSB.vid/PyUSB.pid.
+        returns all the connected devices which matches PyUSB.vid/PyUSB.pid,
+        optionally, match a different usb interface class.
+        CMSIS-DAP is HID =0x03, stlinkv2 is 0xff, vendor specific
         returns an array of PyUSB (Interface) objects
         """
         # find all devices matching the vid/pid specified
@@ -64,9 +66,9 @@ class PyUSB(Interface):
             config = board.get_active_configuration()
             
             # iterate on all interfaces:
-            #    - if we found a HID interface -> CMSIS-DAP
+            #    - if we found a suitable interface...
             for interface in config:
-                if interface.bInterfaceClass == 0x03:
+                if interface.bInterfaceClass == interfaceClass:
                     intf_number = interface.bInterfaceNumber
                     found = True
                     break
@@ -82,6 +84,9 @@ class PyUSB(Interface):
                 pass
         
             intf = usb.util.find_descriptor(config, bInterfaceNumber = intf_number)
+            # FIXME - this will need more work for stlinkv2 to get SWO working!
+            for ep in intf:
+                logging.info("karl - interface ep= %s=%s ", intf, ep)
             ep_out = usb.util.find_descriptor(intf,
                                               # match the first OUT endpoint
                                               custom_match = \
@@ -96,6 +101,10 @@ class PyUSB(Interface):
                                              usb.util.endpoint_direction(e.bEndpointAddress) == \
                                              usb.util.ENDPOINT_IN
                                              )
+            ep_trace = usb.util.find_descriptor(intf,
+                                              custom_match = lambda e: usb.util.endpoint_address(e.bEndpointAddress) == 0x3
+                                              )
+            logging.info("karl - in = %s, out = %s, trace = %s", ep_in, ep_out, ep_trace)
             product_name = usb.util.get_string(board, 256, 2)
             vendor_name = usb.util.get_string(board, 256, 1)
             if ep_out is None or ep_in is None:
@@ -105,6 +114,7 @@ class PyUSB(Interface):
             new_board = PyUSB()
             new_board.ep_in = ep_in
             new_board.ep_out = ep_out
+            new_board.ep_trace = ep_trace
             new_board.dev = board
             new_board.vid = vid
             new_board.pid = pid
@@ -125,14 +135,18 @@ class PyUSB(Interface):
         #logging.debug('sent: %s', data)
         return
         
-        
-    def read(self, timeout = -1):
+    # FIXME - will need another method here for trace I guess?
+    def read(self, timeout = -1, size = None):
         """
         read data on the IN endpoint associated to the HID interface
+        optionally, specify a size to read, defaults to the IN endpoint's
+        max packet size, which is appropriate for HID, but not necessarily correct for others
         """
         if self.ep_in is None:
             raise ValueError('EP_IN endpoint is NULL')
+        if not size:
+            size = self.ep_in.wMaxPacketSize
         
-        data = self.ep_in.read(self.ep_in.wMaxPacketSize, timeout)
+        data = self.ep_in.read(size, timeout)
         #logging.debug('received: %s', data)
         return data

@@ -28,13 +28,17 @@ class Board():
     to create a board
     """
     def __init__(self, target, flash, interface, transport = "cmsis_dap"):
+        self.target = None
+        self.flash = None
         if isinstance(interface, str) == False:
             self.interface = interface
         else:
             self.interface = INTERFACE[interface].chooseInterface(INTERFACE[interface])
         self.transport = TRANSPORT[transport](self.interface)
-        self.target = TARGET[target](self.transport)
-        self.flash = FLASH[flash](self.target)
+        if target:
+            self.target = TARGET[target](self.transport)
+        if self.flash:
+            self.flash = FLASH[flash](self.target)
         return
     
     def init(self):
@@ -44,7 +48,8 @@ class Board():
         logging.debug("init board %s", self)
         self.interface.init()
         self.transport.init()
-        self.target.init()
+        if self.target:
+            self.target.init()
         
     def uninit(self):
         """
