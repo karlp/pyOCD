@@ -208,7 +208,7 @@ class CortexM(Target):
             self.idcode = self.transport.readDP(DP_REG['IDCODE'])
         return self.idcode
     
-    def writeMemory(self, addr, value, transfer_size = 32):
+    def writeMemory(self, addr, value, transfer_size = None):
         """
         write a memory location.
         By default the transfer size is a word
@@ -216,7 +216,7 @@ class CortexM(Target):
         self.transport.writeMem(addr, value, transfer_size)
         return
     
-    def readMemory(self, addr, transfer_size = 32):
+    def readMemory(self, addr, transfer_size = None):
         """
         read a memory location. By default, a word will
         be read

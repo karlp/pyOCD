@@ -91,7 +91,8 @@ class DiscoBoard(Board):
                 try:
                     #target_type = array.array('B', [i for i in u_id_[2:6]]).tostring()
                     #target_type = TARGET_TYPE[target_type]
-                    new_board = DiscoBoard(None, None, board, transport)
+                    # XXX FIXME this isn't good enough! Can this even be done now?
+                    new_board = DiscoBoard("target_stm32l1", None, board, transport)
                     new_board.target_type = "unknown"
                     #new_board.unique_id = array.array('B', [i for i in u_id_[2:2+u_id_[1]]]).tostring()
                     logging.info("new board id detected: %s", board)

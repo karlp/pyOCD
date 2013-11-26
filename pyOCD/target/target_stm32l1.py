@@ -1,6 +1,5 @@
 """
- mbed CMSIS-DAP debugger
- Copyright (c) 2006-2013 ARM Limited
+ Copyright (c) 2013 Karl Palsson
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,17 +14,10 @@
  limitations under the License.
 """
 
-import cortex_m
-import target_lpc1768
-import target_kl25z
-import target_lpc11u24
-import target_lpc800
-import target_stm32l1
+from cortex_m import CortexM
 
-TARGET = {'cortex_m': cortex_m.CortexM,
-          'target_lpc1768': target_lpc1768.LPC1768,
-          'target_kl25z': target_kl25z.KL25Z,
-          'target_lpc11u24': target_lpc11u24.LPC11U24,
-          'target_lpc800': target_lpc800.LPC800,
-          "target_stm32l1": target_stm32l1.STM32L1,
-         }
+class STM32L1(CortexM):
+    
+    def __init__(self, transport):
+        CortexM.__init__(self, transport)
+        self.auto_increment_page_size = 0x400

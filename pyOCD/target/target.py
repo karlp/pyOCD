@@ -41,10 +41,10 @@ class Target():
     def resume(self):
         return
     
-    def writeMemory(self, addr, value, transfer_size = 32):
+    def writeMemory(self, addr, value, transfer_size = None):
         return
     
-    def readMemory(self, addr, transfer_size = 32):
+    def readMemory(self, addr, transfer_size = None):
         return
     
     def writeBlockMemoryUnaligned8(self, addr, value):

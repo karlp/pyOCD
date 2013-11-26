@@ -42,10 +42,10 @@ class Transport():
     def readAP(self, addr):
         return
     
-    def writeMem(self, addr, data, transfer_size = 32):
+    def writeMem(self, addr, data, transfer_size = None):
         return
     
-    def readMem(self, addr, transfer_size = 32):
+    def readMem(self, addr, transfer_size = None):
         return
     
     def writeBlock32(self, addr, data):
