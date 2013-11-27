@@ -40,6 +40,9 @@ $ cd /path-to-pyusb/
 $ sudo python setup.py install
 ```
 
+Fedora: "yum install pyusb" is sufficient.  On Ubuntu, the packaged
+version of pyusb is still 0.4, which is NOT sufficient!
+
 * Mac:
     So far Mac OS X is not supported
     
@@ -155,3 +158,9 @@ Start a GDB server. The server listens on a specific port. You can then
 connect a GDB client to it and debug/program the target
 
 Then you can debug a board which is composed by an interface, a target, a transport and a flash
+
+For further information on the GDB server: see
+[http://www.embecosm.com/appnotes/ean4/embecosm-howto-rsp-server-ean4-issue-2.html#id3033275]
+Alternative pieces: [http://code.google.com/p/pydevtools/source/browse/trunk/bintools/gdb/rsp.py]
+http://mspgcc.cvs.sourceforge.net/viewvc/mspgcc/msp430simu/gdbserver.py?view=markup
+
